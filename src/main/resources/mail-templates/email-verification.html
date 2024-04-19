@@ -1,0 +1,46 @@
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en" th:lang="${lang}" translate="no">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <style>
+        .content {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+        }
+
+        p {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 15px;
+        }
+
+        img {
+            margin: auto;
+            display: block;
+            width: 90px;
+            height: 63px;
+            padding-top: 15px;
+        }
+    </style>
+    <title>Email verification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="content">
+    <img src="https://storage.googleapis.com/dev.idonow.net/assets/logo/logo.png" alt="Logo">
+    <p th:text="#{mail.email-verification.title}" style="font-size:24px;text-align:center">></p>
+    <br>
+    <p th:text="#{mail.greet(${user.firstName})}"></p>
+    <p th:text="#{mail.email-verification.text}"></p>
+    <p th:text="${token}"
+       style="background-color: #E4E3E3;font-size: 22px;letter-spacing: 2px;padding: 15px;width: fit-content;"></p>
+    <br>
+    <p>
+        <span th:text="#{mail.support.text}"></span>
+        <a th:href="${'mailto:' + supportEmailAddress}" th:text="#{mail.support.button-text}"></a>
+    </p>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- DEV CONFIG for Logback -->
+<configuration scan="true" scanPeriod="120 seconds">
+
+    <contextName>mudbase-dev</contextName>
+
+    <variable name="LOG_PATH" value="./logs"/>
+    <variable name="LOG_FILE_DEFAULT" value="idonow"/>
+    <variable name="LOG_FILE_AUDIT" value="idonow-audit"/>
+    <variable name="RAW_LOG_PATTERN" value="%d [%-5p] %c{12} [%t] - %m%n"/>
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <encoder>
+            <pattern>%d --- %magenta([%15.15thread]) %highlight(%5p) %cyan(%logger{15}) : %msg%n%rEx</pattern>
+        </encoder>
+    </appender>
+    <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_DEFAULT}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover on startup, daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>${LOG_PATH}/archive/${LOG_FILE_DEFAULT}-%d{yyyy-MM-dd}-%i.log.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <pattern>"${RAW_LOG_PATTERN}"</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="RollingFileAudit" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${LOG_FILE_AUDIT}.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily and when the file reaches 10 MegaBytes -->
+            <fileNamePattern>${LOG_PATH}/archive/${LOG_FILE_AUDIT}-%d{yyyy-MM-dd}-%i.json.gz</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSS</timestampPattern>
+            <timeZone>UTC</timeZone>
+            <fieldNames>
+                <!-- Disable the default message provider -->
+                <message>[ignore]</message>
+            </fieldNames>
+            <!-- Add a new provider after those than come with the LogstashEncoder -->
+            <provider class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">
+                <pattern>
+                    {
+                    "message": "#tryJson{%message}"
+                    }
+                </pattern>
+            </provider>
+        </encoder>
+
+    </appender>
+
+    <appender name="CONSOLE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="Console"/>
+    </appender>
+
+    <appender name="ROLLING_FILE_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="RollingFile"/>
+    </appender>
+
+    <appender name="ROLLING_FILE_AUDIT_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="RollingFileAudit"/>
+    </appender>
+
+    <!-- LOG everything at INFO level -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE_ASYNC"/>
+        <appender-ref ref="ROLLING_FILE_ASYNC"/>
+    </root>
+
+    <!-- LOG "CustomAuditLogger" -->
+    <logger name="CustomAuditLogger" level="ALL" additivity="false">
+        <appender-ref ref="ROLLING_FILE_AUDIT_ASYNC"/>
+    </logger>
+
+    <!-- DISABLE authentication stack trace (e.g. error level on failure) -->
+    <logger name="net.idonow.security.jwt.auth.AppUserJwtAuthenticationFilter" level="OFF"/>
+    <logger name="net.idonow.security.jwt.auth.SystemUserJwtAuthenticationFilter" level="OFF"/>
+
+
+</configuration>

@@ -1,0 +1,143 @@
+# DEFAULT CONFIG for Dev - add and set custom values in <root>/local.yml
+# (config for Prod must be set on deployment by --spring.config.location=)
+
+spring:
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 30MB
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5415/idonowdb"
+    username: postgres
+    password: postgresPassword
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-migration-naming: true
+    schemas:
+      - service
+      - public
+
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6315
+      password: redisPassword
+      connect-timeout: 8000
+      repositories:
+        enabled: false
+  cache:
+    type: redis
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate    # should be none on DB init, otherwise - validate
+
+    properties:
+      jakarta:
+        persistence:
+          sharedCache:
+            mode: NONE
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        use_sql_comments: true
+        jdbc.batch_size: 20
+        order_inserts: true
+        order_updates: true
+        batch_versioned_data: true
+        globally_quoted_identifiers: true
+        format_sql: true    # should be false in prod
+
+  jackson:
+    deserialization:
+      USE_BIG_DECIMAL_FOR_FLOATS: true
+
+  mail:
+    host: smtp.sendgrid.net
+    username: apikey
+    password: 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
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          port: 587
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          writetimeout: 5000
+          timeout: 3000
+
+  banner:
+    location: classpath:contents/banner.txt
+
+management:
+  endpoints:
+    web:
+      base-path: /system/actuator
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: true
+
+application:
+  common:
+    version: '1.0.0'
+
+    appCountryCode: AM
+    appDefaultLanguage: hy
+
+  limits:
+    resendTokenAfterSeconds: 60
+    tokenExpirationAfterMinutes: 15
+    tokenCheckMaxAttempts: 5
+    maxServiceCount: 3
+
+
+  jwt:
+    accessSecretKey: afwtWEGER3456TH3546sdWREG3sdgih32egw22WFgstheRGewWEsdgr5GtG354WgdhdrhrWFEdarthny34WHNmsRBVethn
+    refreshSecretKey: 565464665ewfgRwTGeRy6y6y6yGWRGTWg56y56y4wgtgtgTGTgGRTGwtg45y5WGWwgyUJkoIOrth654yAEFlLO
+    accessTokenExpirationAfterMinutes: 1200
+    refreshTokenExpirationAfterDays: 10
+
+  twilio:
+    accountSid: AC586f83eb896d75ce3d4c4cca3f28fda7
+    authToken: 145d94cef7b372461ae25c840b5ef331
+    verificationServiceSid: VAd4cf65015ce65ac7bb220dbd456009e1
+
+  emails:
+    serviceEmail: Idonow <help@idonow.net>
+    supportEmail: support@idonow.net
+
+  gcs:
+    projectId: keen-tokenizer-352719
+    credentialsPath: /Users/astghikazizyan/Desktop/keys/cloud_storage_credentials.json
+
+  storage:
+    bucketName: dev.idonow.net
+    thumbnailDirectory: thumbnails/
+    profilePictureDirectory: profile-pictures/
+    workingSampleDirectory: working-samples/
+    resumeDirectory: resumes/
+    imageAllowedContentTypes: image/jpeg, image/jpg, image/png
+    documentAllowedContentTypes: application/pdf
+    allowedExtensions: .jpeg, .jpg, .png, .pdf
+    urlTemplate: https://storage.googleapis.com/${application.storage.bucketName}/
+
+  socketio:
+    server:
+      host: localhost
+      port: 9092

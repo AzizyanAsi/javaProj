@@ -1,0 +1,43 @@
+<!--suppress ThymeleafVariablesResolveInspection -->
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="en" th:lang="${lang}" translate="no">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <style>
+        .content {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+        }
+
+        p {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin: 15px;
+        }
+
+        img {
+            margin: auto;
+            display: block;
+            width: 90px;
+            height: 63px;
+            padding-top: 15px;
+        }
+    </style>
+    <title>Email change notification</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div class="content">
+    <img src="https://storage.googleapis.com/dev.idonow.net/assets/logo/logo.png" alt="Logo">
+    <p th:text="#{mail.email-update-notification.title}" style="font-size:24px;text-align:center">></p>
+    <br>
+    <p th:text="#{mail.email-update-notification.greet(${firstName})}"></p>
+    <br>
+    <p>
+        <span th:text="#{mail.email-update-notification.text}"></span>
+        <a th:href="${'mailto:' + supportEmailAddress}" th:text="#{mail.support.button-text}"></a>
+    </p>
+</div>
+</body>
+</html>
